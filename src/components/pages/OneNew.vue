@@ -4,25 +4,50 @@
       .container
         .wrapper-fluid_content
           j-breadcrumbs
-          .article
+          .article(v-if="oneNew")
             .article_info
-              h2 Дзюдо: турнир памяти Н.С. Мусатова
-              .article_info_date 21.02.2019 г.
+              h2 {{oneNew.title}}
+              .article_info_date {{ dateFormat() }}
             .article_content
               p 
-                img(src="../../assets/images/events_1.png")
-                span В минувшую субботу, в городе Озёрск, проходил традиционный XXXV турнир памяти Н.С. Мусатова среди юношей 2006-2008 г.р. Спортсмены из Челябинской, Пермской и Свердловской областей посетили соревнование и поборолись за медали. От ДЮСШ "Буревестник" в турнире приняли участие 4 спортсмена. Кузнецов Егор, в/к 66 кг. занял III место и получил специальный приз "За волю к победе".
-            Attach(icon="doc", type="link") Протокол соревнований    
+                img(:src='`${mediaUrl}/${oneNew.mainimg}`')
+                span {{ oneNew.text }}
+            a(:href="`${mediaUrl}/${oneNew.file}`" download="")
+              Attach(icon="doc", type="link" v-if="oneNew.file") Протокол соревнований    
 
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
 import Attach from '../../components/elements/UI/Attach'
 export default {
-  beforeMount () {
-    this.$route.meta.breadcrumbs[2].name = 'Название новости из запроса'
+  data () {
+    return {
+      oneNewId: this.$route.params.id
+    }
   },
-  components: { Attach }   
+  created () {
+    this.$store.dispatch('getOneNew', this.oneNewId)
+      .then( () => {
+        this.addBread()
+      })
+  },
+  methods: {
+    addBread () {
+      this.$route.meta.breadcrumbs[2].name = `${this.$store.state.news.oneNew.title}`
+    },
+    dateFormat () {
+      const date = this.$store.state.news.oneNew.created
+      const d = new Date(date);
+      const formatDate = ('0' + d.getDate()).slice(-2) + '.' + ('0' + (d.getMonth() + 1)).slice(-2) + '.' + d.getFullYear() + ' г.' ;
+
+      return formatDate
+    }
+  },
+  components: { Attach },
+  computed: {
+    ...mapGetters(['oneNew'])
+  }
 }
 </script>
 
@@ -35,6 +60,7 @@ h2
   margin 70px 0 0 0
 .article
   margin 0 0 95px 0
+  display inline-block
   &_info
     margin 0 0 30px 0  
     &_date
@@ -55,7 +81,7 @@ h2
       @media screen and (min-width md)
         width 456px
         height 338px
-        padding 0 20px 20px 0
+        margin 0 20px 20px 0
       @media screen and (min-width lg)
         width 556px
 </style>

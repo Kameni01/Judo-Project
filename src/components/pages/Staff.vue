@@ -4,36 +4,38 @@
       .container
         .wrapper-fluid_content
           j-breadcrumbs
-          .human
+          .human(v-if="oneStaff")
             .human_photo
-              img(src='../../assets/images/face_coach.png')
+              img( :src='`${mediaUrl}/${oneStaff.photo}`' )
             .human_content
-              h2 Олег Владиславович Долганов
-              .human_info
-                .human_info_title Уровень образования, квалификация
-                .human_info_descr Высшее образование.
-              .human_info
-                .human_info_title Квалификационная категория: 
-                .human_info_descr Высшая квалификационная категория
-              .human_info
-                .human_info_title Курсы повышения квалификации: 
-                .human_info_descr 
-              .human_info
-                .human_info_title Ученая степень: 
-                .human_info_descr Кандидат педагогических наук.
-              .human_info
-                .human_info_title Общий стаж работы:
-                .human_info_descr 
-              .human_info
-                .human_info_title Стаж работы по специальности:
-                .human_info_descr 
+              h2 {{ `${oneStaff.name} ${oneStaff.patronymic} ${oneStaff.family}`}}
+              .human_info(v-for="(info, index) in oneStaff.info")
+                .human_info_title {{info.name}}
+                .human_info_descr {{info.content}}
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
 export default {
-  beforeMount () {
-    this.$route.meta.breadcrumbs[1].name = 'Имя тренера из запроса'
-  }  
+  data () {
+    return {
+      staffId: this.$route.params.id
+    }
+  },
+  created () {
+    this.$store.dispatch('getOneStaff', this.staffId)
+      .then( () => {
+        this.addBread()
+      })
+  },
+  methods: {
+    addBread () {
+      this.$route.meta.breadcrumbs[1].name = `${this.$store.state.staff.oneStaff.name} ${this.$store.state.staff.oneStaff.patronymic} ${this.$store.state.staff.oneStaff.family} `
+    }
+  },
+  computed: {
+    ...mapGetters(['oneStaff'])
+  }
 }
 </script>
 

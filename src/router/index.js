@@ -4,12 +4,13 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 import Home from '../components/Home.vue'
-import Album from '../components/pages/Album.vue'
+import PhotoAlbums from '../components/pages/PhotoAlbums.vue'
+import VideoAlbums from '../components/pages/VideoAlbums.vue'
 import VideoAlbum from '../components/pages/VideoAlbum.vue'
 import OneNew from '../components/pages/OneNew.vue'
 import Staff from '../components/pages/Staff.vue'
 import Human from '../components/pages/Human.vue'
-import Article from '../components/pages/Article.vue'
+import OneInformation from '../components/pages/OneInformation.vue'
 import Information from '../components/pages/Information.vue'
 import EducationMaterials from '../components/pages/EducationMaterials.vue'
 import OneEducationMaterial from '../components/pages/OneEducationMaterial.vue'
@@ -28,8 +29,8 @@ const router = new Router({
       meta: {title: 'Главная страница'}
     },
     {
-      path: '/album',
-      component: Album,
+      path: '/photo-gallery',
+      component: PhotoAlbums,
       meta: {
         breadcrumbs: [
           { name: 'Главная', link: '/'},
@@ -40,13 +41,26 @@ const router = new Router({
       }
     },
     {
-      path: '/videoalbum',
+      path: '/video-gallery',
+      component: VideoAlbums,
+      meta: {
+        breadcrumbs: [
+          { name: 'Главная', link: '/'},
+          { name: 'Новости', link: '/news'},
+          { name: 'Видеогалерея', link: '/'},
+        ],
+        title: 'Видеоальбомы'
+      }
+    },
+    {
+      path: '/video-gallery/:album',
       component: VideoAlbum,
       meta: {
         breadcrumbs: [
           { name: 'Главная', link: '/'},
           { name: 'Новости', link: '/news'},
-          { name: 'Видеогалерея', link: '/'}
+          { name: 'Видеогалерея', link: '/video-gallery'},
+          { name: 'Название альбома', link: '/'},
         ],
         title: 'Видеоальбомы'
       }
@@ -75,20 +89,21 @@ const router = new Router({
       }
     },
     {
+      name: 'human profile',
       path: '/human/:id',
       component: Human,
       meta: {
         breadcrumbs: [
           { name: 'Главная', link: '/'},
-          { name: 'Доска почета', link: '/information'},
+          { name: 'Доска почета', link: '/hall'},
           { name: '', link: '/'}
         ],
-        title: 'Статья'
+        title: 'Профиль'
       }
     },
     {
-      path: '/article/:id',
-      component: Article,
+      path: '/information/:id',
+      component: OneInformation,
       meta: {
         breadcrumbs: [
           { name: 'Главная', link: '/'},
@@ -139,20 +154,21 @@ const router = new Router({
         breadcrumbs: [
           { name: 'Главная', link: '/'},
           { name: 'Новости', link: '/news'},
-          { name: 'Фотогалерея', link: '/album' },
+          { name: 'Фотогалерея', link: '/photo-gallery' },
           { name: '', link: '' }
         ],
         title: 'Фотогалерея'
       }
     },
     {
-      path: '/video-gallery/:id',
+      path: '/video-gallery/:album/:video',
       component: VideoGallery,
       meta: {
         breadcrumbs: [
           { name: 'Главная', link: '/'},
           { name: 'Новости', link: '/news'},
-          { name: 'Видеогалерея', link: '/videoalbum' },
+          { name: 'Видеогалерея', link: '/video-gallery' },
+          { name: '', link: '/video-gallery/'},
           { name: '', link: '' }
         ],
         title: 'Видеогалерея'
@@ -175,7 +191,8 @@ const router = new Router({
       meta: {
         breadcrumbs: [
           { name: 'Главная', link: '/'},
-          { name: 'Доска почета', link: '' }
+          { name: 'Доска почета', link: '/hall' },
+          { name: '', link: '' }
         ],
         title: 'Новости'
       }
@@ -194,5 +211,9 @@ const router = new Router({
   ]
 })
 
+router.beforeEach((to, from, next) => {
+  document.title = to.meta.title
+  next()
+})
 
 export default router

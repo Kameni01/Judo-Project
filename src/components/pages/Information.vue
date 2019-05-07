@@ -1,35 +1,70 @@
 <template lang="pug">
   MainLayout
     template(v-slot:content)
-      .container
+      .container(v-if="information")
         .wrapper-fluid_content
           j-breadcrumbs
-          LinkHeader
+          .link-header
+            router-link(:to="`${link.to}`" v-for="(link, index) in headerLinks" :key="index")
+              j-button.link-header_button {{ link.name }}
           .information
             .information_container
               h2 Для родителей
-              Attach(icon="info") Какие документы необходимы для поступления в ДЮСОШ «Буревестник»
-              Attach(icon="info") Как правильно сформировать рацион ребенка, чтобы укрепить имунитет и увеличить его продуктивность. Еще линнее название для статьи мне не придумать
-              Attach(icon="info") Летний лагерь и что для этого требуется
+              router-link(:to="`information/${info.id}`" v-for="(info, index) in informationParents" :key="index")
+                Attach(icon="info") {{info.title}}
             .information_container
-              h2 Для студентов
-              Attach(icon="info") Как все успевать? Краткий курс по выживанию
-              Attach(icon="info") Дзюдо и как применить хорошо знакомые навыки в плохо знакомой жизни
-              Attach(icon="info") Документы, необходимые для того, чтобы в начале года начать обучение на кафедре физической культуры УрФУ
+              h2 Для детей
+              router-link(:to="`information/${info.id}`" v-for="(info, index) in informationChildren" :key="index")
+                Attach(icon="info") {{info.title}}
             .information_container
-              h2 Отделение дзюдо ДЮСШ «Буревестник»
-              Attach(icon="info") О “Буревестнике”
+              h2 Другое
+              router-link(:to="`information/${info.id}`" v-for="(info, index) in informationOther" :key="index")
+                Attach(icon="info") {{info.title}}
 </template>
 
 <script>
-import LinkHeader from '../../components/elements/UI/LinkHeader'
+import {mapGetters} from 'vuex'
 import Attach from '../../components/elements/UI/Attach'
 export default {
- components: { LinkHeader, Attach }   
+  data () {
+    return {
+      headerLinks: [
+        {name: 'Для родителей', to: '/information'},
+        {name: 'Для детей', to: '/information'},
+        {name: 'Другое', to: '/information'},
+      ]
+    }
+  },
+  created () {
+    this.$store.dispatch('getInformation')
+  },
+  computed: {
+    ...mapGetters(['information', 'informationParents', 'informationChildren', 'informationOther'])
+  },
+  components: { Attach }   
 }
 </script>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
+@import '../../assets/stylus/mixins/flexbox'
+@import '../../assets/stylus/base/breakpoints'
+.link-header
+  flexbox(column, nowrap, space-between, stretch, stretch)
+  margin 0 0 45px 0
+  @media screen and (min-width: lg)
+    flexbox(row, nowrap, space-between, stretch, stretch)
+  .link-header_button
+    @media screen and (max-width sm)
+      margin 10px auto
+      width 100%
+    @media screen and (min-width md)
+      margin 10px auto
+      padding 7px
+      width 200px
+    @media screen and (min-width xl)
+      width 349px
+      padding 7px 40px
+
 .information
   &_container
     margin-bottom 60px
